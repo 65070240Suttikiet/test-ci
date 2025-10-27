@@ -1,4 +1,4 @@
-name: Build and Deploy Vite to GitHub Pages
+name: Build and Deploy Vite to GitHub Pages (New)
 
 on:
   push:
@@ -6,17 +6,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read      # อ่านโค้ด
+  pages: write        # อนุญาตให้ deploy ไปที่ GitHub Pages
+  id-token: write     # ใช้ยืนยันตัวตนระหว่าง deploy
 
 jobs:
-  # 🏗️ 1) Build Job
   build:
-    name: Build Project
+    name: Build Vite project
     runs-on: ubuntu-latest
-    outputs:
-      build-folder: dist
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,26 +29,20 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Upload production files
-        uses: actions/upload-artifact@v4
+      # 👇 Upload ไฟล์ dist/ เป็น artifact สำหรับ deploy
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: vite-dist
           path: ./dist
 
-  # 🚀 2) Deploy Job
   deploy:
     name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download built files
-        uses: actions/download-artifact@v4
-        with:
-          name: vite-dist
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
