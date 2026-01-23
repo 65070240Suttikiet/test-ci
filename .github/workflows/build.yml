@@ -1,15 +1,13 @@
 name: Build and Deploy Vite to GitHub Pages (New)
-
-on:
+'on':
   push:
-    branches: ["main"]
-  workflow_dispatch:
-
+    branches:
+      - main
+  workflow_dispatch: null
 permissions:
-  contents: read      # อ่านโค้ด
-  pages: write        # อนุญาตให้ deploy ไปที่ GitHub Pages
-  id-token: write     # ใช้ยืนยันตัวตนระหว่าง deploy
-
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   build:
     name: Build Vite project
@@ -17,24 +15,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Install dependencies
         run: npm install
-
       - name: Build project
         run: npm run build
-
-      # 👇 Upload ไฟล์ dist/ เป็น artifact สำหรับ deploy
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-
   deploy:
     name: Deploy to GitHub Pages
     needs: build
