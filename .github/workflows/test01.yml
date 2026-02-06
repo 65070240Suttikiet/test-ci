@@ -4,3 +4,6 @@
       - main
       - gh-pages
       - develop
+  pull_request:
+    branches:
+      - main
