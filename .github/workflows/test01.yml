@@ -1,9 +1,24 @@
-'on':
+name: My-First-CI
+on:
   push:
-    branches:
-      - main
-      - gh-pages
-      - develop
-  pull_request:
-    branches:
-      - main
+    branches: ["main"]
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm install
+      - name: Run Tests
+        run: npm test
+      - name: Build Project
+        run: npm run build
+      - name: Docker Build
+        run: docker build -t app:latest .
