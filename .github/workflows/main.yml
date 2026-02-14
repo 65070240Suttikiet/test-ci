@@ -1,0 +1,29 @@
+name: Auto-Generated-Pipeline
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Prepare Package Manager
+        run: |
+          echo "Selected PM: pnpm"
+          if [ "pnpm" == "pnpm" ]; then
+            npm install -g pnpm
+          elif [ "pnpm" == "yarn" ]; then
+            npm install -g yarn
+          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build Project
+        run: pnpm run build
