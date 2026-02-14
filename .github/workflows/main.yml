@@ -11,15 +11,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Install pnpm (if needed)
-        if: ${{ '{{pkg_manager}}' == 'pnpm' }}
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Prepare Package Manager
+        run: |
+          if [ "pnpm" == "pnpm" ]; then
+            npm install -g pnpm
+          elif [ "pnpm" == "yarn" ]; then
+            npm install -g yarn
+          fi
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
       - run: pnpm install
       - name: Build Project
